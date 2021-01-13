@@ -4,145 +4,81 @@ const Bodies = Matter.Bodies;
 const Constraint = Matter.Constraint;
 
 var engine, world;
-var stand1, stand1, ground1;
-var box1, box2, box3, box4, box5, box6, box7, box8, box9, box10, box11, box12, box13, box14, box15, box16, box17, box18;
-var polygon1, slingShot;
-var score = 0;
-var backgroundImg;
-var gameState = "on slingshot";
-var bg = "Sprites/bg.jpg";
+var box1, pig1,pig3;
+var backgroundImg,platform;
+var bird, slingshot;
+
 
 function preload() {
-  getBackgroundImg();
-  backgroundImg = loadImage("Sprites/bg.jpg");
+    backgroundImg = loadImage("sprites/bg.png");
 }
 
-function setup() {
-  createCanvas(800,400);
-  engine = Engine.create();
-  world = engine.world;
+function setup(){
+    var canvas = createCanvas(1200,400);
+    engine = Engine.create();
+    world = engine.world;
 
-  createSprite(400, 200, 50, 50);
 
-  stand1 = new Ground(390,height - 100,200,20);
-  stand2 = new Ground(650,height - 200,200,20);
-  ground1 = new Ground(400,height + 50,800,20);
+    ground = new Ground(600,height,1200,20);
+    platform = new Ground(150, 305, 300, 170);
 
-  box1 = new Box(330, 235, 30, 40);
-  box2 = new Box(360, 235, 30, 40);
-  box3 = new Box(390, 235, 30, 40);
-  box4 = new Box(420, 235, 30, 40);
-  box5 = new Box(450, 235, 30, 40);
+    box1 = new Box(700,320,70,70);
+    box2 = new Box(920,320,70,70);
+    pig1 = new Pig(810, 350);
+    log1 = new Log(810,260,300, PI/2);
 
-  box6 = new Box(360, 195, 30, 40);
-  box7 = new Box(390, 195, 30, 40);
-  box8 = new Box(420, 195, 30, 40);
+    box3 = new Box(700,240,70,70);
+    box4 = new Box(920,240,70,70);
+    pig3 = new Pig(810, 220);
 
-  box9 = new Box(390, 185, 30, 40);
+    log3 =  new Log(810,180,300, PI/2);
 
-  box10 = new Box(590, 135, 30, 40);
-  box11 = new Box(620, 135, 30, 40);
-  box12 = new Box(650, 135, 30, 40);
-  box13 = new Box(680, 135, 30, 40);
-  box14 = new Box(710, 135, 30, 40);
+    box5 = new Box(810,160,70,70);
+    log4 = new Log(760,120,150, PI/7);
+    log5 = new Log(870,120,150, -PI/7);
 
-  box15 = new Box(620, 85, 30, 40);
-  box16 = new Box(650, 85, 30, 40);
-  box17 = new Box(680, 85, 30, 40);
+    bird = new Bird(200,50);
 
-  box18 = new Box(650, 55, 30, 40);
-
-  polygon1 = new Polygon(100, 280, 40);
-
-  slingShot = new SlingShot(polygon1.body, {x: 150, y: 150});
+    //log6 = new Log(230,180,80, PI/2);
+    slingshot = new SlingShot(bird.body,{x:200, y:50});
 }
 
-function draw() {
-  if(backgroundImg) {
+function draw(){
     background(backgroundImg);
-}
-  
-  noStroke();
-  textSize(20);
-  fill("white");
-  text("SCORE :" + score, 650, 40);
-  text("Press the space key for another chance!", 400, 380);
+    Engine.update(engine);
+    //strokeWeight(4);
+    box1.display();
+    box2.display();
+    ground.display();
+    pig1.display();
+    log1.display();
 
-  Engine.update(engine);
+    box3.display();
+    box4.display();
+    pig3.display();
+    log3.display();
 
-  stroke("black");
+    box5.display();
+    log4.display();
+    log5.display();
 
-  box1.score();
-  box1.display();
-  box2.score();
-  box2.display();
-  box3.score();
-  box3.display();
-  box4.score();
-  box4.display();
-  box5.score();
-  box5.display();
-  box6.score();
-  box6.display();
-  box7.score();
-  box7.display();
-  box8.score();
-  box8.display();
-  box9.score();
-  box9.display();
-  box10.score();
-  box10.display();
-  box11.score();
-  box11.display();
-  box12.score();
-  box12.display();
-  box13.score();
-  box13.display();
-  box14.score();
-  box14.display();
-  box15.score();
-  box15.display();
-  box16.score();
-  box16.display();
-  box17.score();
-  box17.display();
-  box18.score();
-  box18.display();
-  stand1.display();
-  stand2.display()
-  ground1.display();
-  polygon1.display();
-  slingShot.display();
+    bird.display();
+    platform.display();
+    //log6.display();
+    slingshot.display();    
 }
 
 function mouseDragged(){
-  if(gameState!=="launched"){
-    Matter.Body.setPosition(polygon1.body, {x: mouseX , y: mouseY});
-  }
+    Matter.Body.setPosition(bird.body, {x: mouseX , y: mouseY});
 }
 
-function mouseReleased() {
-  slingShot.fly();
-  gameState = "launched";
+
+function mouseReleased(){
+    slingshot.fly();
 }
 
-function keyPressed() {
-  if(keyCode === 32) {
-      slingShot.attach(polygon1.body);
-      gameState = "on slingshot";
-  }
-}
-
-async function getBackgroundImg() {
-  var response = await fetch("https://worldtimeapi.org/api/timezone/Asia/Kolkata");
-  var responseJSON = await response.json();
-  var date = responseJSON.datetime;
-  var hour = date.slice(11, 13);
-  if(hour>=06 && hour<=19){
-      bg = "Sprites/bg.jpg"
-  } else {
-      bg = "Sprites/bg1.jpg"
-  }
-  backgroundImg = loadImage(bg);
-  console.log(backgroundImg);
+function keyPressed(){
+    if(keyCode === 32){
+        slingshot.attach(bird.body);
+    }
 }
